@@ -1,153 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UnawakeCool | Hub</title>
-    <style>
-        :root {
-            --bg-color: #0f111a;
-            --card-bg: #1e2233;
-            --accent-color: #5865F2; /* Discord/Gamer Blurple */
-            --text-main: #ffffff;
-            --text-muted: #a0a5c0;
-        }
+<div align="center">
+    <!-- Pulls your live GitHub Profile Picture dynamically with styling -->
+    <img src="https://github.com" width="110" height="110" style="border-radius: 50%; border: 3px solid #5865F2; margin-bottom: 10px;" alt="UnawakeCool Profile Picture">
+    <h1>UnawakeCool</h1>
+    <p style="color: #a0a5c0; font-size: 1.1rem; margin-top: 5px; margin-bottom: 30px;">Developer & Minecraft Server Architect</p>
+</div>
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vi;
-        }
+<h2 style="border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 8px; color: #5865F2; letter-spacing: 1px;">MY REPOSITORIES</h2>
 
-        header {
-            text-align: center;
-            margin-top: 60px;
-            margin-bottom: 40px;
-        }
+<!-- Repositories Grid Matrix -->
+<div style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
 
-        .avatar-placeholder {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background-color: var(--accent-color);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            font-weight: bold;
-            box-shadow: 0 8px 24px rgba(88, 101, 242, 0.4);
-            margin-bottom: 15px;
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 2.5rem;
-            letter-spacing: -0.5px;
-        }
-
-        p.subtitle {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            margin-top: 8px;
-        }
-
-        main {
-            width: 90%;
-            max-width: 800px;
-            margin-bottom: 60px;
-        }
-
-        .section-title {
-            font-size: 1.2rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--accent-color);
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 8px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            text-decoration: none;
-            color: inherit;
-            display: block;
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.3);
-            border: 1px solid rgba(88, 101, 242, 0.3);
-        }
-
-        .card h3 {
-            margin: 0 0 10px 0;
-            color: #ffffff;
-        }
-
-        .card p {
-            margin: 0;
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        .tag {
-            display: inline-block;
-            background: rgba(88, 101, 242, 0.15);
-            color: var(--accent-color);
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            margin-top: 15px;
-        }
-    </style>
-</head>
-<body>
-
-    <header>
-        <div class="avatar-placeholder">U</div>
-        <h1>UnawakeCool</h1>
-        <p class="subtitle">Developer & Minecraft Server Architect</p>
-    </header>
-
-    <main>
-        <div class="section-title">My Projects</div>
-        <div class="grid">
-            
-            <!-- Project 1 -->
-            <div class="card">
-                <h3>Custom Anti-Cheat</h3>
-                <p>An asynchronous, modular, and high-performance Spigot/Paper anti-cheat built to secure Minecraft servers without main-thread lag.</p>
-                <span class="tag">Java</span>
-            </div>
-
-            <!-- Project 2 -->
-            <div class="card">
-                <h3>Server Utilities</h3>
-                <p>Lightweight utility plugins and tools targeted entirely at custom gameplay mechanics and performance optimizations.</p>
-                <span class="tag">Bukkit API</span>
-            </div>
-
+    <!-- Project 1: Minecraft-Classic -->
+    <a href="https://github.com/UnawakeCool/Minecraft-Classic" style="text-decoration: none; display: block;">
+        <div style="background-color: #1e2233; padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+            <h3 style="margin: 0 0 8px 0; color: #ffffff;">🎮 Minecraft-Classic</h3>
+            <p style="margin: 0; color: #a0a5c0; font-size: 0.95rem; line-height: 1.4;">A nostalgic recreation or legacy optimization environment celebrating classic Minecraft mechanics.</p>
+            <span style="display: inline-block; background: rgba(88, 101, 242, 0.15); color: #5865F2; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; margin-top: 10px;">Minecraft</span>
         </div>
-    </main>
+    </a>
 
-</body>
-</html>
+    <!-- Project 2: Echoes-of-Aethelgard -->
+    <a href="https://github.com/UnawakeCool/Echoes-of-Aethelgard" style="text-decoration: none; display: block;">
+        <div style="background-color: #1e2233; padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+            <h3 style="margin: 0 0 8px 0; color: #ffffff;">⚔️ Echoes of Aethelgard</h3>
+            <p style="margin: 0; color: #a0a5c0; font-size: 0.95rem; line-height: 1.4;">An immersive, narrative-driven world or custom RPG environment built with intricate configurations.</p>
+            <span style="display: inline-block; background: rgba(88, 101, 242, 0.15); color: #5865F2; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; margin-top: 10px;">RPG / World Design</span>
+        </div>
+    </a>
+
+    <!-- Project 3: Wiggle-Be-Social -->
+    <a href="https://github.com/UnawakeCool/Wiggle-Be-Social" style="text-decoration: none; display: block;">
+        <div style="background-color: #1e2233; padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+            <h3 style="margin: 0 0 8px 0; color: #ffffff;">💬 Wiggle Be Social</h3>
+            <p style="margin: 0; color: #a0a5c0; font-size: 0.95rem; line-height: 1.4;">A community hub or social utility integration project designed to connect players and users natively.</p>
+            <span style="display: inline-block; background: rgba(88, 101, 242, 0.15); color: #5865F2; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; margin-top: 10px;">Social Integration</span>
+        </div>
+    </a>
+
+    <!-- Project 4: Racing-World -->
+    <a href="https://github.com/UnawakeCool/Racing-World" style="text-decoration: none; display: block;">
+        <div style="background-color: #1e2233; padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+            <h3 style="margin: 0 0 8px 0; color: #ffffff;">🏎️ Racing World</h3>
+            <p style="margin: 0; color: #a0a5c0; font-size: 0.95rem; line-height: 1.4;">High-speed tracks, physics adjustments, or race minigame systems configured for rapid server gameplay.</p>
+            <span style="display: inline-block; background: rgba(88, 101, 242, 0.15); color: #5865F2; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; margin-top: 10px;">Minigame / Physics</span>
+        </div>
+    </a>
+
+</div>
