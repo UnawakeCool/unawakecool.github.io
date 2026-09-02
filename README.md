@@ -3,65 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cringe & Gold: Funny Minecon Moments</title>
+    <title>Cringe & Gold: The Ultimate Minecon Archive</title>
     <style>
         body {
             font-family: 'Courier New', Courier, monospace;
-            background-color: #1a1a1a;
+            background-color: #121212;
             color: #00ff00;
             text-align: center;
             padding: 20px;
+            margin: 0;
         }
         header {
-            background-color: #333;
-            padding: 20px;
+            background-color: #1e1e1e;
+            padding: 30px 20px;
             border-radius: 8px;
-            border: 2px solid #555;
-            margin-bottom: 30px;
+            border: 2px solid #333;
+            max-width: 1200px;
+            margin: 0 auto 40px auto;
         }
         h1 {
             color: #ffcc00;
-            margin: 0;
+            margin: 0 0 10px 0;
+            font-size: 2rem;
         }
-        /* Expanded Soundboard Layout */
-        .soundboard-section {
-            background-color: #222;
-            border: 2px dashed #ffcc00;
-            border-radius: 8px;
-            padding: 20px;
-            max-width: 900px;
-            margin: 0 auto 30px auto;
-        }
-        .soundboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 15px;
-            justify-items: center;
+        h2 {
+            color: #ffcc00;
+            grid-column: 1 / -1;
+            text-align: left;
+            border-bottom: 2px dashed #333;
+            padding-bottom: 10px;
             margin-top: 20px;
         }
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 25px;
             max-width: 1200px;
-            margin: 0 auto;
+            margin: 0 auto 50px auto;
         }
         .card {
-            background-color: #252525;
-            border: 2px solid #444;
+            background-color: #1c1c1c;
+            border: 2px solid #2d2d2d;
             border-radius: 8px;
             padding: 15px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+            transition: border-color 0.2s;
         }
         .card:hover {
             border-color: #ffcc00;
+        }
+        .card h3 {
+            margin: 0 0 12px 0;
+            color: #fff;
+            font-size: 1.1rem;
         }
         .video-container {
             position: relative;
             padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
             height: 0;
             overflow: hidden;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            background-color: #000;
+            border-radius: 4px;
         }
         .video-container iframe {
             position: absolute;
@@ -69,73 +72,75 @@
             left: 0;
             width: 100%;
             height: 100%;
-            border-radius: 4px;
+            border: 0;
         }
         p {
-            color: #ddd;
-            font-size: 0.95rem;
+            color: #b3b3b3;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin: 0;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>⛏️ Legendary Minecon Moments ⛏️</h1>
-        <p>A compilation of the funniest, most awkward, and unforgettable moments in Minecon history.</p>
+        <h1>⛏️ The Minecon Hall of Awkwardness ⛏️</h1>
+        <p>Your permanent archive tracking the historical descent of public Q&A sessions into complete chaos.</p>
     </header>
 
-    <!-- EXPANDED: Minecon 2013 Mega Soundboard -->
-    <div class="soundboard-section">
-        <h2 style="color: #ffcc00; margin: 0; font-size: 1.4rem;">🔊 Minecon 2013 Instant Soundboard</h2>
-        <p style="color: #aaa; font-size: 0.85rem; margin: 5px 0 0 0;">Click the buttons below to spam the absolute best quotes from the panel Q&As.</p>
+    <!-- SECTION 1: MOST AWKWARD MOMENTS -->
+    <div class="grid">
+        <h2>😬 "Most Awkward Moments" Series</h2>
         
-        <div class="soundboard-grid">
-            <!-- 1. How many of you have autism? -->
-            <iframe width="110" height="200" src="https://myinstants.com" frameborder="0" scrolling="no"></iframe>
+        <!-- 2012 -->
+        <div class="card">
+            <h3>Minecon 2012</h3>
+            <div class="video-container">
+                <iframe src="https://youtube.com" allowfullscreen></iframe>
+            </div>
+            <p>Where the earliest stage jitters and early panel stumbles began laying the foundation of cringe culture.</p>
+        </div>
 
-            <!-- 2. Dedotated Wham -->
-            <iframe width="110" height="200" src="https://myinstants.com" frameborder="0" scrolling="no"></iframe>
+        <!-- 2013 -->
+        <div class="card">
+            <h3>Minecon 2013</h3>
+            <div class="video-container">
+                <iframe src="https://youtube.com" allowfullscreen></iframe>
+            </div>
+            <p>The legendary gold standard. Features the "dedotated wam" question, Brony interrogations, and awkward autographs.</p>
+        </div>
 
-            <!-- 3. Held Hostage in Room 208 -->
-            <iframe width="110" height="200" src="https://myinstants.com" frameborder="0" scrolling="no"></iframe>
-
-            <!-- 4. Join My Dad's Server -->
-            <iframe width="110" height="200" src="https://myinstants.com" frameborder="0" scrolling="no"></iframe>
-
-            <!-- 5. Are You a Brony? -->
-            <iframe width="110" height="200" src="https://myinstants.com" frameborder="0" scrolling="no"></iframe>
-
-            <!-- 6. Favourite Block in Minecraft -->
-            <iframe width="110" height="200" src="https://myinstants.com" frameborder="0" scrolling="no"></iframe>
+        <!-- 2015 -->
+        <div class="card">
+            <h3>Minecon 2015</h3>
+            <div class="video-container">
+                <iframe src="https://youtube.com" allowfullscreen></iframe>
+            </div>
+            <p>A return to absolute chaos including highly personal user invitations, random stage setups, and intense panel mic silences.</p>
         </div>
     </div>
 
+    <!-- SECTION 2: LEAST NORMAL MOMENTS -->
     <div class="grid">
-        <!-- Card 1: Main Awkward Compilation Video -->
+        <h2>🌀 "Least Normal Moments" Series</h2>
+
+        <!-- 2016 -->
         <div class="card">
-            <h3>The Holy Grail of Awkwardness</h3>
+            <h3>Minecon 2016</h3>
             <div class="video-container">
-                <iframe src="https://youtube.com" frameborder="0" allowfullscreen></iframe>
+                <iframe src="https://youtube.com" allowfullscreen></iframe>
             </div>
-            <p>The definitive 2013 supercut featuring all the audio clips heard in the soundboard above.</p>
+            <p>Tracking the most unconventional audience exchanges, gender demographic debates, and mic-hugging moments.</p>
         </div>
 
-        <!-- Card 2: Dedotated Wam Original -->
+        <!-- Bonus: The Dance -->
         <div class="card">
-            <h3>1. Dedotated Wam (Isolated)</h3>
+            <h3>The Closing Dance Raves</h3>
             <div class="video-container">
-                <iframe src="https://youtube.com" frameborder="0" allowfullscreen></iframe>
+                <iframe src="https://youtube.com" allowfullscreen></iframe>
             </div>
-            <p>The iconic question that baffled the panel and solidified itself in internet meme history.</p>
-        </div>
-
-        <!-- Card 3: Minecon Dance Ultimate -->
-        <div class="card">
-            <h3>2. The Closing Dance Sequence</h3>
-            <div class="video-container">
-                <iframe src="https://youtube.com" frameborder="0" allowfullscreen></iframe>
-            </div>
-            <p>When the organizers tried to get a room full of Minecraft players to rave on command.</p>
+            <p>The painful closing sequence attempts to spin a room full of keyboard warriors into an active party floor.</p>
         </div>
     </div>
 
