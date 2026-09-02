@@ -23,20 +23,21 @@
             color: #ffcc00;
             margin: 0;
         }
-        /* Soundboard Section Styling */
+        /* Expanded Soundboard Layout */
         .soundboard-section {
             background-color: #222;
             border: 2px dashed #ffcc00;
             border-radius: 8px;
-            padding: 15px;
-            max-width: 600px;
+            padding: 20px;
+            max-width: 900px;
             margin: 0 auto 30px auto;
         }
-        .soundboard-container {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 15px;
+        .soundboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            justify-items: center;
+            margin-top: 20px;
         }
         .grid {
             display: grid;
@@ -83,37 +84,54 @@
         <p>A compilation of the funniest, most awkward, and unforgettable moments in Minecon history.</p>
     </header>
 
-    <!-- NEW: Soundboard Section -->
+    <!-- EXPANDED: Minecon 2013 Mega Soundboard -->
     <div class="soundboard-section">
-        <h2 style="color: #ffcc00; margin: 0; font-size: 1.2rem;">🔊 Instant Soundboard Buttons</h2>
-        <div class="soundboard-container">
-            <iframe width="110" height="200" src="https://www.myinstants.com/instant/dedotated-wham-99715/embed/" frameborder="0" scrolling="no"></iframe>
-            <iframe width="110" height="200" src="https://www.myinstants.com/instant/what-is-your-favourite-block-in-minecraft-33287/embed/" frameborder="0" scrolling="no"></iframe>
+        <h2 style="color: #ffcc00; margin: 0; font-size: 1.4rem;">🔊 Minecon 2013 Instant Soundboard</h2>
+        <p style="color: #aaa; font-size: 0.85rem; margin: 5px 0 0 0;">Click the buttons below to spam the absolute best quotes from the panel Q&As.</p>
+        
+        <div class="soundboard-grid">
+            <!-- 1. How many of you have autism? -->
+            <iframe width="110" height="200" src="https://myinstants.com" frameborder="0" scrolling="no"></iframe>
+
+            <!-- 2. Dedotated Wham -->
+            <iframe width="110" height="200" src="https://myinstants.com" frameborder="0" scrolling="no"></iframe>
+
+            <!-- 3. Held Hostage in Room 208 -->
+            <iframe width="110" height="200" src="https://myinstants.com" frameborder="0" scrolling="no"></iframe>
+
+            <!-- 4. Join My Dad's Server -->
+            <iframe width="110" height="200" src="https://myinstants.com" frameborder="0" scrolling="no"></iframe>
+
+            <!-- 5. Are You a Brony? -->
+            <iframe width="110" height="200" src="https://myinstants.com" frameborder="0" scrolling="no"></iframe>
+
+            <!-- 6. Favourite Block in Minecraft -->
+            <iframe width="110" height="200" src="https://myinstants.com" frameborder="0" scrolling="no"></iframe>
         </div>
     </div>
 
     <div class="grid">
-        <!-- Card 1: Dedotated Wam -->
+        <!-- Card 1: Main Awkward Compilation Video -->
         <div class="card">
-            <h3>1. Dedotated Wam</h3>
+            <h3>The Holy Grail of Awkwardness</h3>
+            <div class="video-container">
+                <iframe src="https://youtube.com" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <p>The definitive 2013 supercut featuring all the audio clips heard in the soundboard above.</p>
+        </div>
+
+        <!-- Card 2: Dedotated Wam Original -->
+        <div class="card">
+            <h3>1. Dedotated Wam (Isolated)</h3>
             <div class="video-container">
                 <iframe src="https://youtube.com" frameborder="0" allowfullscreen></iframe>
             </div>
             <p>The iconic question that baffled the panel and solidified itself in internet meme history.</p>
         </div>
 
-        <!-- Card 2: Fast Steve Swag -->
-        <div class="card">
-            <h3>2. Fast Steve Swag</h3>
-            <div class="video-container">
-                <iframe src="https://youtube.com" frameborder="0" allowfullscreen></iframe>
-            </div>
-            <p>A classic Q&A session showcase of pure, unadulterated chaotic energy from the audience crowd.</p>
-        </div>
-
         <!-- Card 3: Minecon Dance Ultimate -->
         <div class="card">
-            <h3>3. The Closing Dance Sequence</h3>
+            <h3>2. The Closing Dance Sequence</h3>
             <div class="video-container">
                 <iframe src="https://youtube.com" frameborder="0" allowfullscreen></iframe>
             </div>
