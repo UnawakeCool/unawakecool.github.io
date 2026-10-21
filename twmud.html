@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Twmud — Live from Mud Club</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0"></script>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0e0e10; --panel: #18181b; --panel2: #202024; --line: #303036;
+    --text: #f4f4f5; --muted: #aaaab4; --purple: #b8794b; --purple2: #8b5a35;
+    --green: #53fc18; --red: #eb0400;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif; background: var(--bg); color: var(--text); }
+  button, input { font: inherit; }
+  button { cursor: pointer; border: 0; color: inherit; }
+  .topbar { height: 64px; display:flex; align-items:center; gap:22px; padding:0 22px; background:#18181b; border-bottom:1px solid var(--line); position:sticky; top:0; z-index:5; }
+  .brand { font-weight:900; font-size:25px; letter-spacing:-1.2px; white-space:nowrap; }
+  .brand span { color:var(--purple); }
+  .guest-badge { color:#d7a477; border:1px solid #69452e; border-radius:999px; padding:7px 10px; font-size:11px; font-weight:800; letter-spacing:.08em; }
+  .auth-note { font-size:12px; color:var(--muted); margin:2px 0 14px; }
+  .auth-tabs { display:flex; gap:8px; margin:12px 0 16px; }
+  .auth-tabs button { flex:1; }
+  .search { flex:1; max-width:560px; margin:auto; display:flex; }
+  .search input { width:100%; padding:11px 14px; border:1px solid #3b3b44; border-radius:8px 0 0 8px; background:#0e0e10; color:var(--text); outline:none; }
+  .search input:focus { border-color:var(--purple); }
+  .search button { padding:0 17px; border-radius:0 8px 8px 0; background:#303036; }
+  .top-actions { display:flex; gap:9px; align-items:center; }
+  .btn { padding:10px 14px; border-radius:7px; font-weight:750; background:#303036; }
+  .btn.primary { background:var(--purple2); }
+  .btn:hover { filter:brightness(1.15); }
+  .layout { display:grid; grid-template-columns:230px minmax(0,1fr); min-height:calc(100vh - 64px); }
+  aside { background:#18181b; border-right:1px solid var(--line); padding:20px 12px; }
+  .navtitle { color:var(--muted); font-size:11px; font-weight:800; letter-spacing:1.4px; margin:10px 12px; }
+  .navitem { display:flex; gap:12px; align-items:center; padding:11px 12px; border-radius:8px; margin:3px 0; color:#dddde2; background:transparent; width:100%; text-align:left; }
+  .navitem.active, .navitem:hover { background:#303036; }
+  .navitem.active { color:#fff; box-shadow:inset 3px 0 var(--purple); }
+  .pill { display:inline-flex; align-items:center; gap:6px; border-radius:5px; padding:3px 6px; background:var(--red); color:white; font-size:10px; font-weight:900; letter-spacing:.5px; }
+  .live-dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:#eb0400; box-shadow:0 0 9px #eb0400; }
+  .main { padding:26px clamp(16px,3vw,42px) 60px; max-width:1500px; width:100%; margin:auto; }
+  .welcome { display:flex; justify-content:space-between; align-items:end; gap:20px; margin-bottom:24px; }
+  h1 { font-size:clamp(27px,4vw,38px); margin:0 0 6px; letter-spacing:-1.3px; }
+  .muted { color:var(--muted); }
+  .hero { display:grid; grid-template-columns:minmax(0,1.65fr) minmax(250px,1fr); gap:18px; margin-bottom:34px; }
+  .feature { border-radius:13px; overflow:hidden; background:var(--panel); border:1px solid var(--line); }
+  .preview { aspect-ratio:16/8; min-height:190px; display:flex; flex-direction:column; justify-content:space-between; padding:18px; position:relative; overflow:hidden; background:radial-gradient(ellipse at 70% 25%, #5a2ba5 0%, transparent 38%), linear-gradient(135deg,#17152a,#28213f 55%,#17171b); }
+  .preview:before { content:""; position:absolute; inset:0; opacity:.24; background-image:linear-gradient(30deg,transparent 47%,#fff 48%,transparent 49%),linear-gradient(120deg,transparent 47%,#fff 48%,transparent 49%); background-size:70px 70px; mask-image:linear-gradient(to bottom,black,transparent); }
+  .preview > * { position:relative; }
+  .preview .game { font-size:clamp(26px,4vw,44px); font-weight:950; text-shadow:0 4px 22px #000; letter-spacing:-1px; }
+  .preview .subgame { font-weight:700; color:#e4d7ff; }
+  .preview .livebadge { align-self:flex-start; }
+  .feature-info { padding:16px 18px 18px; display:flex; gap:13px; align-items:flex-start; }
+  .avatar { width:46px; height:46px; border-radius:12px; flex-shrink:0; display:grid; place-items:center; font-weight:900; background:linear-gradient(135deg,#b8794b,#59351f); }
+  .streamtitle { font-size:18px; font-weight:850; margin:0 0 6px; }
+  .creator { color:#dddde2; font-weight:750; }
+  .meta { color:var(--muted); font-size:13px; margin-top:6px; }
+  .tag { display:inline-block; font-size:11px; padding:4px 7px; border-radius:5px; background:#303036; color:#dedee5; margin:8px 4px 0 0; }
+  .sidefeature { border-radius:13px; border:1px solid var(--line); background:var(--panel); padding:20px; display:flex; flex-direction:column; justify-content:space-between; min-height:100%; }
+  .sidefeature h2 { margin:0 0 8px; font-size:20px; }
+  .sidefeature p { color:var(--muted); line-height:1.5; }
+  .creatorlist { display:grid; gap:13px; margin-top:18px; }
+  .creatorrow { display:flex; align-items:center; gap:11px; }
+  .miniavatar { width:35px; height:35px; display:grid; place-items:center; border-radius:10px; background:#34343b; font-weight:900; }
+  .creatorrow strong { display:block; font-size:14px; }
+  .creatorrow small { color:var(--muted); }
+  .sectionhead { display:flex; align-items:center; justify-content:space-between; margin:32px 0 15px; gap:12px; }
+  h2 { margin:0; font-size:22px; letter-spacing:-.5px; }
+  .filters { display:flex; flex-wrap:wrap; gap:8px; }
+  .filter { padding:8px 12px; border-radius:999px; background:#242428; color:#dddde2; border:1px solid #38383e; font-size:13px; }
+  .filter.active { background:#eee7ff; color:#211336; border-color:#eee7ff; }
+  .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:17px; }
+  .streamcard { min-width:0; cursor:pointer; }
+  .thumb { aspect-ratio:16/9; border-radius:10px; overflow:hidden; position:relative; display:flex; flex-direction:column; justify-content:space-between; padding:12px; border:1px solid #393943; transition:transform .15s; }
+  .streamcard:hover .thumb { transform:translateY(-2px); }
+  .thumb .emoji { font-size:clamp(32px,4vw,52px); filter:drop-shadow(0 4px 8px #0008); }
+  .thumb .thumbtitle { font-weight:900; font-size:17px; text-shadow:0 2px 10px #000; }
+  .thumb .viewers { align-self:flex-start; background:#111c; border-radius:4px; padding:4px 6px; font-size:11px; font-weight:850; }
+  .t1 { background:radial-gradient(circle at 75% 30%,#a86aef,transparent 35%),linear-gradient(135deg,#16213e,#472b63,#1b1725); }
+  .t2 { background:radial-gradient(circle at 25% 25%,#e8b04d,transparent 33%),linear-gradient(135deg,#37251b,#8b5033,#202024); }
+  .t3 { background:radial-gradient(circle at 65% 25%,#64d6b3,transparent 32%),linear-gradient(135deg,#092d35,#16675d,#152125); }
+  .t4 { background:radial-gradient(circle at 70% 25%,#e75b76,transparent 30%),linear-gradient(135deg,#3a152b,#792a51,#18131a); }
+  .t5 { background:radial-gradient(circle at 35% 30%,#6d9ef4,transparent 32%),linear-gradient(135deg,#101c37,#344f82,#181b25); }
+  .t6 { background:radial-gradient(circle at 70% 30%,#d7ce68,transparent 30%),linear-gradient(135deg,#2a3219,#59632e,#1c2116); }
+  .streambody { display:flex; gap:11px; padding:11px 1px; }
+  .streambody .avatar { width:40px; height:40px; border-radius:10px; }
+  .streambody h3 { font-size:15px; margin:0 0 4px; }
+  .streambody p { color:var(--muted); font-size:13px; margin:0; line-height:1.4; }
+  .streambody .views { color:#dddde2; font-size:12px; margin-top:6px; }
+  .hidden { display:none !important; }
+  .empty { padding:40px 20px; text-align:center; border:1px dashed #444; border-radius:12px; color:var(--muted); }
+  .modalback { position:fixed; inset:0; background:#000b; display:none; align-items:center; justify-content:center; padding:20px; z-index:20; }
+  .modalback.open { display:flex; }
+  .modal { width:min(560px,100%); border:1px solid var(--line); border-radius:14px; background:#18181b; padding:22px; box-shadow:0 24px 80px #0008; }
+  .modal h2 { margin-bottom:10px; }
+  .modal p { color:var(--muted); line-height:1.55; }
+  .modal input { width:100%; padding:11px 12px; border:1px solid #444; background:#0e0e10; color:var(--text); border-radius:7px; margin:6px 0 12px; }
+  .modalactions { display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap; }
+  .source-select { width:100%; padding:11px 12px; border:1px solid #444; background:#0e0e10; color:var(--text); border-radius:7px; margin:6px 0 12px; }
+  .broadcast-preview { width:100%; max-height:280px; aspect-ratio:16/9; background:#080809; object-fit:contain; border:1px solid var(--line); border-radius:9px; margin:8px 0 14px; }
+  .broadcast-note { font-size:12px; color:#d7a477 !important; }
+  .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#eee7ff; color:#20132e; padding:12px 16px; border-radius:9px; font-weight:750; box-shadow:0 12px 35px #0007; z-index:30; display:none; }
+  .toast.show { display:block; }
+  .connection { font-size:12px; color:var(--muted); padding:8px 12px; border:1px solid var(--line); border-radius:8px; white-space:nowrap; }
+  .live-control { position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:14; display:flex; align-items:center; gap:14px; padding:12px 14px; border:1px solid #68413b; border-radius:12px; background:#211716; box-shadow:0 12px 35px #0009; max-width:calc(100vw - 24px); }
+  .live-control .live-label { font-weight:850; white-space:nowrap; }
+  .btn.danger { background:#b42318; color:#fff; }
+  .chat-panel { position:fixed; right:18px; bottom:18px; width:min(390px,calc(100vw - 24px)); height:min(570px,calc(100vh - 40px)); background:#18181b; border:1px solid var(--line); border-radius:14px; z-index:15; box-shadow:0 20px 70px #000a; display:flex; flex-direction:column; overflow:hidden; }
+  .chat-head { padding:14px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line); gap:10px; }
+  .stream-player { width:100%; aspect-ratio:16/9; background:#050506; object-fit:contain; border-bottom:1px solid var(--line); }
+  .player-note { padding:8px 12px; color:var(--muted); font-size:12px; }
+  .chat-messages { flex:1; overflow:auto; padding:12px; display:flex; flex-direction:column; gap:10px; }
+  .chat-message { font-size:13px; line-height:1.4; overflow-wrap:anywhere; }
+  .chat-message strong { color:#d7a477; margin-right:5px; }
+  .chat-compose { display:flex; gap:7px; padding:12px; border-top:1px solid var(--line); }
+  .chat-compose input { min-width:0; flex:1; background:#0e0e10; color:var(--text); border:1px solid #444; border-radius:7px; padding:10px; }
+  .statusline { font-size:12px; color:var(--muted); margin-top:8px; }
+  footer { margin-top:50px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:12px; }
+  @media (max-width:1050px) { .grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .hero { grid-template-columns:1fr; } .sidefeature { min-height:220px; } }
+  @media (max-width:720px) { .topbar { padding:0 12px; gap:12px; } .brand { font-size:22px; } .search { max-width:none; } .top-actions .optional { display:none; } .layout { grid-template-columns:1fr; } aside { display:none; } .main { padding:20px 14px 40px; } .grid { grid-template-columns:1fr; } .welcome { align-items:start; flex-direction:column; } }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">tw<span>mud</span></div>
+  <div class="search"><input id="search" type="search" placeholder="Search streams and creators…" aria-label="Search streams and creators"><button id="searchBtn" aria-label="Search">⌕</button></div>
+  <div class="top-actions">
+    <button class="btn optional" id="goLive">＋ Go Live</button>
+    <span class="connection" id="connection">Connecting…</span>
+    <button class="btn primary" id="accountButton">Log in / Sign up</button>
+  </div>
+</header>
+<div id="liveControl" class="live-control hidden" role="status"><span class="pill"><span class="live-dot"></span> LIVE</span><span class="live-label" id="liveControlTitle">You are streaming</span><button class="btn danger" id="endStream" type="button">End stream</button></div>
+<div class="layout">
+  <aside>
+    <div class="navtitle">DISCOVER</div>
+    <button class="navitem active" data-nav="all">⌂ <span>For You</span></button>
+    <button class="navitem" data-nav="live">🔴 <span>Live Now</span></button>
+    <button class="navitem" data-nav="minecraft">▧ <span>Minecraft</span></button>
+    <button class="navitem" data-nav="news">▤ <span>News & Events</span></button>
+    <div class="navtitle" style="margin-top:28px">YOUR SPACE</div>
+    <button class="navitem" id="following">♡ <span>Following</span></button>
+    <button class="navitem" id="categories">▦ <span>Categories</span></button>
+    <div class="navtitle" style="margin-top:28px">MUD CLUB</div>
+    <button class="navitem" id="community">♧ <span>Community Hub</span></button>
+    <button class="navitem" id="about">ⓘ <span>About Twmud</span></button>
+  </aside>
+  <main class="main">
+    <div class="welcome">
+      <div><h1>Discover live streams</h1><div class="muted">Your next favorite Mud Club creator is live.</div></div>
+      <div class="pill"><span class="live-dot"></span> LIVE ON TW MUD</div>
+    </div>
+    <div class="sectionhead"><h2>Live channels</h2><div class="filters"><button class="filter active" data-filter="all">All</button><button class="filter" data-filter="minecraft">Minecraft</button><button class="filter" data-filter="news">News</button><button class="filter" data-filter="building">Building</button></div></div>
+    <section class="grid" id="streams"></section>
+    <div class="empty hidden" id="empty">No community streams yet. Be the first to go live!</div>
+    <div class="statusline" id="backendStatus">Loading community streams…</div>
+    <footer>© 2026 Twmud · A fan-made Mud Club streaming concept. Community-created stream listings. Live video uses browser peer-to-peer delivery; connection success depends on network settings.</footer>
+  </main>
+</div>
+
+<div class="modalback" id="modalback" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <h2 id="modalTitle">Go Live on Twmud</h2>
+    <p id="modalText">Create a public stream listing. No account required. Actual video broadcasting is not connected yet.</p>
+    <label id="modalLabel" for="modalInput">Stream title</label>
+    <input id="modalInput" placeholder="What are you streaming?" maxlength="120">
+    <label for="broadcastSource" id="sourceLabel">Video source</label>
+    <select id="broadcastSource" class="source-select"><option value="screen">Screen</option><option value="webcam">Webcam</option><option value="both">Screen and webcam</option></select>
+    <video id="broadcastPreview" class="broadcast-preview hidden" autoplay muted playsinline></video>
+    <p class="broadcast-note" id="broadcastNote">Your browser will ask for permission to share your screen or camera.</p>
+    <div class="modalactions"><button class="btn" id="cancelModal">Cancel</button><button class="btn primary" id="confirmModal">Create listing</button></div>
+  </div>
+</div>
+<div class="modalback" id="authBack" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+  <div class="modal">
+    <h2 id="authTitle">Welcome to Twmud</h2>
+    <p id="authDescription">Log in or create a Twmud account using a username and password.</p>
+    <div class="auth-tabs"><button class="btn primary" id="loginTab" type="button">Log in</button><button class="btn" id="signupTab" type="button">Sign up</button></div>
+    <form id="authForm">
+      <label for="authUsername">Username</label>
+      <input id="authUsername" autocomplete="username" minlength="3" maxlength="24" pattern="[A-Za-z0-9_]{3,24}" placeholder="YourUsername" required>
+      <label for="authPassword">Password</label>
+      <input id="authPassword" type="password" autocomplete="current-password" minlength="8" maxlength="128" placeholder="At least 8 characters" required>
+      <p class="auth-note">Usernames: 3–24 letters, numbers, or underscores. Passwords: at least 8 characters.</p>
+      <div class="modalactions"><button class="btn" id="cancelAuth" type="button">Cancel</button><button class="btn primary" id="submitAuth" type="submit">Log in</button></div>
+    </form>
+  </div>
+</div>
+<section class="chat-panel hidden" id="chatPanel" aria-label="Stream chat">
+  <div class="chat-head"><div><strong id="chatTitle">Stream chat</strong><div class="statusline" id="chatStatus">Community chat</div></div><button class="btn" id="closeChat" aria-label="Close chat">✕</button></div>
+  <video id="viewerVideo" class="stream-player hidden" autoplay playsinline controls></video><div id="playerNote" class="player-note hidden">Connecting to live video…</div>
+  <div class="chat-messages" id="chatMessages"><p class="muted">Loading messages…</p></div>
+  <form class="chat-compose" id="chatForm"><input id="chatInput" maxlength="500" placeholder="Say something nice…" autocomplete="off"><button class="btn primary" type="submit">Send</button></form>
+</section>
+<div class="toast" id="toast" role="status"></div>
+<script>
+(() => {
+  const SUPABASE_URL = 'https://fberfwguftxhtgrxugfe.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_CbVKNLMo_zNIUZghVe15wQ_JM_pbw7O';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const cards = [...document.querySelectorAll('.streamcard')];
+  const search = document.getElementById('search');
+  const empty = document.getElementById('empty');
+  const connection = document.getElementById('connection');
+  const backendStatus = document.getElementById('backendStatus');
+  let activeFilter = 'all', activeNav = 'all', modalAction = 'live';
+  let selectedStream = null, chatChannel = null, streamChannel = null, currentUser = null, authMode = 'login';
+  let broadcasterChannel=null, broadcasterPeers=new Map(), viewerChannel=null, viewerPeer=null, viewerPeerId=null, activeStreamId=null;
+  const usernameFor = user => user?.user_metadata?.username || user?.email?.split('@')[0] || 'MudViewer';
+  const guestName = () => { if(currentUser) return usernameFor(currentUser); let n=localStorage.getItem('twmud_guest_name'); if(!n){n=(prompt('Choose a display name for Twmud (3–24 characters):','MudViewer')||'MudViewer').trim().slice(0,24); if(n.length<3)n='MudViewer'; localStorage.setItem('twmud_guest_name',n); } return n; };
+  const authBack=document.getElementById('authBack'), authForm=document.getElementById('authForm'), authUsername=document.getElementById('authUsername'), authPassword=document.getElementById('authPassword'), accountButton=document.getElementById('accountButton');
+  function updateAccountUI(){accountButton.textContent=currentUser ? usernameFor(currentUser)+' · Log out' : 'Log in / Sign up';connection.textContent=currentUser?'Connected · '+usernameFor(currentUser):'Connected · guest';}
+  function openAuth(mode='login'){authMode=mode;document.getElementById('authTitle').textContent=mode==='login'?'Log in to Twmud':'Create your Twmud account';document.getElementById('authDescription').textContent=mode==='login'?'Log in with your username and password.':'Choose a username and password for your Twmud account.';document.getElementById('submitAuth').textContent=mode==='login'?'Log in':'Create account';document.getElementById('loginTab').classList.toggle('primary',mode==='login');document.getElementById('signupTab').classList.toggle('primary',mode==='signup');authPassword.autocomplete=mode==='login'?'current-password':'new-password';authBack.classList.add('open');authPassword.value='';}
+  accountButton.addEventListener('click',async()=>{if(currentUser){const {error}=await supabase.auth.signOut();if(error){toast('Could not log out: '+error.message);return;}currentUser=null;updateAccountUI();toast('Logged out. You can still browse as a guest.');}else openAuth('login');});
+  document.getElementById('loginTab').addEventListener('click',()=>openAuth('login'));document.getElementById('signupTab').addEventListener('click',()=>openAuth('signup'));document.getElementById('cancelAuth').addEventListener('click',()=>authBack.classList.remove('open'));authBack.addEventListener('click',e=>{if(e.target===authBack)authBack.classList.remove('open');});
+  authForm.addEventListener('submit',async e=>{e.preventDefault();const username=authUsername.value.trim(),password=authPassword.value;if(!/^[A-Za-z0-9_]{3,24}$/.test(username)){toast('Username must be 3–24 letters, numbers, or underscores.');return;}if(password.length<8){toast('Password must be at least 8 characters.');return;}const email=username.toLowerCase()+'@users.twmud.app';const submit=document.getElementById('submitAuth');submit.disabled=true;try{if(authMode==='signup'){const {data:created,error:createError}=await supabase.functions.invoke('twmud-signup',{body:{username,password}});if(createError){let detail=createError.message||'Could not reach the account service.';try{const context=createError.context;if(context&&typeof context.json==='function'){const payload=await context.json();detail=payload.error||payload.message||detail;}}catch(_){}throw new Error(detail);}if(created?.error)throw new Error(created.error);}const {data,error}=await supabase.auth.signInWithPassword({email,password});if(error)throw error;currentUser=data.user;updateAccountUI();authBack.classList.remove('open');toast(authMode==='signup'?'Welcome to Twmud, '+username+'!':'Welcome back, '+username+'!');}catch(error){toast(error.message||'Authentication failed.');}finally{submit.disabled=false;}});
+  supabase.auth.onAuthStateChange((_event,session)=>{currentUser=session?.user||null;updateAccountUI();});
+  const realCardIds = new Set();
+  const toast = (message) => { const el=document.getElementById('toast'); el.textContent=message; el.classList.add('show'); clearTimeout(window.__twToast); window.__twToast=setTimeout(()=>el.classList.remove('show'),3200); };
+  const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  function updateCards() {
+    const query=search.value.trim().toLowerCase(); let shown=0;
+    document.querySelectorAll('.streamcard').forEach(card=>{
+      const searchable=(card.dataset.title+' '+card.dataset.creator+' '+card.dataset.category).toLowerCase();
+      const navOk=activeNav==='all'||(activeNav==='live'&&card.dataset.live==='true')||(activeNav==='minecraft'&&card.dataset.category.includes('minecraft'))||(activeNav==='news'&&card.dataset.category.includes('news'));
+      const filterOk=activeFilter==='all'||card.dataset.category.includes(activeFilter);
+      const visible=navOk&&filterOk&&(!query||searchable.includes(query)); card.classList.toggle('hidden',!visible); if(visible) shown++;
+    }); empty.classList.toggle('hidden',shown>0);
+  }
+  document.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-filter]').forEach(b=>b.classList.toggle('active',b===btn));activeFilter=btn.dataset.filter;updateCards();}));
+  document.querySelectorAll('[data-nav]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b===btn));activeNav=btn.dataset.nav;activeFilter='all';document.querySelectorAll('[data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter==='all'));updateCards();}));
+  search.addEventListener('input',updateCards); document.getElementById('searchBtn').addEventListener('click',updateCards);
+
+  const modalback=document.getElementById('modalback'), modalTitle=document.getElementById('modalTitle'), modalText=document.getElementById('modalText'), modalLabel=document.getElementById('modalLabel'), modalInput=document.getElementById('modalInput'), confirmModal=document.getElementById('confirmModal');
+  let captureStream=null, webcamStream=null, screenStream=null, composedStream=null;
+  const broadcastSource=document.getElementById('broadcastSource'), broadcastPreview=document.getElementById('broadcastPreview'), broadcastNote=document.getElementById('broadcastNote');
+  function stopCapture(){[captureStream,webcamStream,screenStream,composedStream].forEach(s=>{if(s)s.getTracks().forEach(t=>t.stop())});captureStream=webcamStream=screenStream=composedStream=null;broadcastPreview.srcObject=null;broadcastPreview.classList.add('hidden');}
+  const rtcConfig={iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]};
+  async function sendSignal(channel,payload){if(!channel)return;try{await channel.send({type:'broadcast',event:'signal',payload});}catch(e){console.warn('Signaling failed',e);}}
+  async function closeBroadcaster(){for(const pc of broadcasterPeers.values())pc.close();broadcasterPeers.clear();if(broadcasterChannel){await supabase.removeChannel(broadcasterChannel);broadcasterChannel=null;}}
+  async function startBroadcaster(streamId){await closeBroadcaster();broadcasterChannel=supabase.channel('rtc-'+streamId,{config:{broadcast:{self:false,ack:true}}});broadcasterChannel.on('broadcast',{event:'signal'},async({payload})=>{if(!payload||payload.to!=='broadcaster')return;const id=payload.from;if(payload.type==='join'){if(!captureStream||broadcasterPeers.has(id))return;const pc=new RTCPeerConnection(rtcConfig);broadcasterPeers.set(id,pc);captureStream.getTracks().forEach(track=>pc.addTrack(track,captureStream));pc.onicecandidate=e=>{if(e.candidate)sendSignal(broadcasterChannel,{type:'ice',to:id,from:'broadcaster',candidate:e.candidate});};pc.onconnectionstatechange=()=>{if(['failed','closed','disconnected'].includes(pc.connectionState)){pc.close();broadcasterPeers.delete(id);}};const offer=await pc.createOffer();await pc.setLocalDescription(offer);await sendSignal(broadcasterChannel,{type:'offer',to:id,from:'broadcaster',description:pc.localDescription});}else if(payload.type==='answer'){const pc=broadcasterPeers.get(id);if(pc&&pc.signalingState!=='closed')try{await pc.setRemoteDescription(payload.description);}catch(e){console.warn(e);}}else if(payload.type==='ice'){const pc=broadcasterPeers.get(id);if(pc&&payload.candidate)try{await pc.addIceCandidate(payload.candidate);}catch(e){console.warn(e);}}});broadcasterChannel.subscribe(status=>{if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')toast('Live signaling connection failed. Viewers may not connect.');});}
+  async function stopViewer(){if(viewerPeer){viewerPeer.close();viewerPeer=null;}if(viewerChannel){await supabase.removeChannel(viewerChannel);viewerChannel=null;}const video=document.getElementById('viewerVideo');video.srcObject=null;video.classList.add('hidden');document.getElementById('playerNote').classList.add('hidden');}
+  async function connectViewer(stream){await stopViewer();if(!stream?.is_live)return;const note=document.getElementById('playerNote'),video=document.getElementById('viewerVideo');note.textContent='Connecting to live video…';note.classList.remove('hidden');video.classList.remove('hidden');viewerPeerId=crypto.randomUUID();viewerPeer=new RTCPeerConnection(rtcConfig);viewerPeer.ontrack=e=>{video.srcObject=e.streams[0];note.textContent='Receiving live video';video.play().catch(()=>{});};viewerPeer.onconnectionstatechange=()=>{if(viewerPeer&&['failed','disconnected','closed'].includes(viewerPeer.connectionState)){note.textContent='Video connection interrupted. Try reopening the stream.';note.classList.remove('hidden');}};viewerChannel=supabase.channel('rtc-'+stream.id,{config:{broadcast:{self:false,ack:true}}});viewerChannel.on('broadcast',{event:'signal'},async({payload})=>{if(!payload||payload.to!==viewerPeerId)return;try{if(payload.type==='offer'){await viewerPeer.setRemoteDescription(payload.description);const answer=await viewerPeer.createAnswer();await viewerPeer.setLocalDescription(answer);await sendSignal(viewerChannel,{type:'answer',to:'broadcaster',from:viewerPeerId,description:viewerPeer.localDescription});}else if(payload.type==='ice'&&payload.candidate){await viewerPeer.addIceCandidate(payload.candidate);}}catch(e){console.warn('Viewer signaling error',e);note.textContent='Could not establish video connection: '+e.message;}});viewerPeer.onicecandidate=e=>{if(e.candidate)sendSignal(viewerChannel,{type:'ice',to:'broadcaster',from:viewerPeerId,candidate:e.candidate});};viewerChannel.subscribe(async status=>{if(status==='SUBSCRIBED'){await sendSignal(viewerChannel,{type:'join',to:'broadcaster',from:viewerPeerId});}else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'){note.textContent='Signaling unavailable. Refresh and try again.';}});}
+  function openModal(action){modalAction=action;if(!currentUser){toast('Log in to create a stream listing.');openAuth('login');return;}stopCapture();modalback.classList.add('open');modalInput.value='';modalTitle.textContent='Go Live on Twmud';modalText.textContent='Choose what you want to broadcast, then start your stream preview.';modalLabel.textContent='Stream title';modalInput.placeholder='What are you streaming?';confirmModal.textContent='Start broadcast';broadcastNote.textContent='Your browser will ask for permission to share your screen or camera.';modalInput.focus();}
+  async function prepareCapture(){stopCapture();const mode=broadcastSource.value;try{if(mode==='screen'||mode==='both')screenStream=await navigator.mediaDevices.getDisplayMedia({video:true,audio:true});if(mode==='webcam'||mode==='both')webcamStream=await navigator.mediaDevices.getUserMedia({video:true,audio:true});if(mode!=='both')captureStream=mode==='screen'?screenStream:webcamStream;else{const canvas=document.createElement('canvas');canvas.width=1280;canvas.height=720;const ctx=canvas.getContext('2d');const screenVideo=document.createElement('video'),camVideo=document.createElement('video');screenVideo.srcObject=screenStream;camVideo.srcObject=webcamStream;screenVideo.muted=camVideo.muted=true;await Promise.all([screenVideo.play(),camVideo.play()]);const draw=()=>{if(!captureStream)return;ctx.drawImage(screenVideo,0,0,canvas.width,canvas.height);ctx.drawImage(camVideo,canvas.width-330,canvas.height-190,300,169);requestAnimationFrame(draw)};captureStream=new MediaStream();canvas.captureStream(30).getVideoTracks().forEach(t=>captureStream.addTrack(t));[...screenStream.getAudioTracks(),...webcamStream.getAudioTracks()].slice(0,1).forEach(t=>captureStream.addTrack(t));draw();composedStream=captureStream;}broadcastPreview.srcObject=captureStream;broadcastPreview.classList.remove('hidden');broadcastNote.textContent='Capture preview is running. When you start, Twmud will attempt to send video to viewers using peer-to-peer WebRTC.';if(screenStream)screenStream.getVideoTracks()[0].addEventListener('ended',()=>{broadcastNote.textContent='Screen sharing stopped. Start again to resume.';});return true;}catch(err){stopCapture();broadcastNote.textContent='Capture was cancelled or blocked: '+(err.message||'permission denied');return false;}}
+  broadcastSource.addEventListener('change',()=>{if(captureStream)prepareCapture();});
+  document.getElementById('goLive').addEventListener('click',()=>openModal('live'));
+  document.getElementById('following').addEventListener('click',()=>toast(currentUser?'Following features are coming soon.':'Log in to use personalized features.'));
+  document.getElementById('categories').addEventListener('click',()=>toast('Use the category filters to browse streams.'));
+  document.getElementById('community').addEventListener('click',()=>toast(currentUser?'Welcome to the Twmud community, '+usernameFor(currentUser)+'!':'Welcome to the Twmud community! You are browsing as a guest.'));
+  document.getElementById('about').addEventListener('click',()=>toast('Twmud — a fan-made Mud Club streaming concept.'));
+  document.getElementById('cancelModal').addEventListener('click',()=>{modalback.classList.remove('open');stopCapture();});
+  modalback.addEventListener('click',e=>{if(e.target===modalback)modalback.classList.remove('open');});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){modalback.classList.remove('open');stopCapture();closeChat();}});
+
+  async function submitModal(){
+    const value=modalInput.value.trim(); if(!value){toast('Enter a stream title.');return;}
+    if(!captureStream){const started=await prepareCapture();if(!started)return;}
+    const streamer_name=guestName();
+    const category=(prompt('Category (Minecraft, News, Building, or Just Chatting):','Minecraft')||'Just Chatting').slice(0,60);
+    const {data,error}=await supabase.from('streams').insert({streamer_id:currentUser.id,streamer_name,title:value.slice(0,120),category,is_live:true}).select().single();
+    if(error){toast('Could not create stream: '+error.message);return;}
+    activeStreamId=data.id;document.getElementById('liveControlTitle').textContent=value.slice(0,60);document.getElementById('liveControl').classList.remove('hidden');modalback.classList.remove('open');await startBroadcaster(data.id);toast('You are live! Twmud is ready to connect viewers.');await loadStreams();if(data)openChat(data);
+  }
+  document.getElementById('endStream').addEventListener('click',async()=>{
+    if(!activeStreamId)return;
+    const endButton=document.getElementById('endStream');endButton.disabled=true;endButton.textContent='Ending…';
+    try{
+      const {error}=await supabase.from('streams').update({is_live:false}).eq('id',activeStreamId).eq('streamer_id',currentUser.id);
+      if(error)throw error;
+      activeStreamId=null;document.getElementById('liveControl').classList.add('hidden');await closeBroadcaster();await stopViewer();stopCapture();
+      toast('Stream ended. Your listing is now offline.');await loadStreams();
+    }catch(error){toast('Could not end stream: '+(error.message||'unknown error'));}
+    finally{endButton.disabled=false;endButton.textContent='End stream';}
+  });
+  confirmModal.addEventListener('click',submitModal);
+  modalInput.addEventListener('keydown',e=>{if(e.key==='Enter')submitModal();});
+
+  function createRealCard(stream){
+    if(realCardIds.has(stream.id))return;realCardIds.add(stream.id);
+    const creator=stream.streamer_name||'MudStreamer'; const category=(stream.category||'Just Chatting').toLowerCase().replace(/[^a-z0-9_-]/g,' ');
+    const article=document.createElement('article');article.className='streamcard real-stream';article.dataset.realId=stream.id;article.dataset.category=category;article.dataset.live=String(stream.is_live);article.dataset.title=stream.title;article.dataset.creator=creator;
+    const initials=creator.slice(0,2).toUpperCase();
+    article.innerHTML=`<div class="thumb t3"><span class="pill" style="align-self:flex-start"><span class="live-dot"></span> ${stream.is_live?'LIVE':'OFFLINE'}</span><div class="emoji">📺</div><div class="thumbtitle">${escapeHtml(stream.title)}</div><span class="viewers">Twmud community</span></div><div class="streambody"><div class="avatar">${escapeHtml(initials)}</div><div><h3>${escapeHtml(stream.title)}</h3><p>${escapeHtml(creator)} · ${escapeHtml(stream.category||'Just Chatting')}</p><div class="views">${stream.is_live?'Live now':'Offline'}</div></div></div>`;
+    article.addEventListener('click',()=>openChat(stream));document.getElementById('streams').prepend(article);
+  }
+  async function loadStreams(){
+    backendStatus.textContent='Loading community streams…';
+    const {data,error}=await supabase.from('streams').select('id,streamer_id,streamer_name,title,category,is_live,created_at').order('created_at',{ascending:false}).limit(50);
+    if(error){backendStatus.textContent='Community streams unavailable: '+error.message;console.error(error);return;}
+    document.querySelectorAll('.real-stream').forEach(el=>el.remove());realCardIds.clear();(data||[]).forEach(row=>createRealCard({...row,streamer_name:row.streamer_name||'MudStreamer'}));
+    backendStatus.textContent=`Connected to Twmud database · ${data.length} community stream listing${data.length===1?'':'s'}.`;updateCards();
+  }
+  async function openChat(stream){
+    selectedStream=stream;document.getElementById('chatPanel').classList.remove('hidden');document.getElementById('chatTitle').textContent=stream.title;document.getElementById('chatStatus').textContent='Twmud chat · '+(stream.streamer_name||'community streamer');
+    if(stream.is_live&&stream.id!==activeStreamId)await connectViewer(stream);else await stopViewer();
+    document.getElementById('chatMessages').innerHTML='<p class="muted">Loading messages…</p>';
+    if(chatChannel){await supabase.removeChannel(chatChannel);chatChannel=null;}
+    await loadMessages();
+    chatChannel=supabase.channel('chat-'+stream.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:'stream_id=eq.'+stream.id},async payload=>{await renderMessage(payload.new);}).subscribe(status=>{if(status==='CHANNEL_ERROR')document.getElementById('chatStatus').textContent='Chat realtime unavailable; refresh to see updates.';});
+  }
+  async function loadMessages(){
+    const box=document.getElementById('chatMessages');const {data,error}=await supabase.from('chat_messages').select('id,stream_id,sender_id,sender_name,body,created_at').eq('stream_id',selectedStream.id).order('created_at',{ascending:true}).limit(100);
+    if(error){box.innerHTML='<p class="muted">Could not load chat: '+escapeHtml(error.message)+'</p>';return;}
+    box.innerHTML='';if(!data.length)box.innerHTML='<p class="muted">No messages yet. Be the first to say mud! 🌱</p>';data.forEach(row=>renderMessage(row));box.scrollTop=box.scrollHeight;
+  }
+  async function renderMessage(message){
+    const box=document.getElementById('chatMessages');if(box.querySelector('.muted')&&box.children.length===1)box.innerHTML='';
+    const name=message.sender_name||'MudViewer';
+    if(box.querySelector(`[data-message-id="${message.id}"]`))return;
+    const line=document.createElement('div');line.className='chat-message';line.dataset.messageId=message.id;line.innerHTML=`<strong>${escapeHtml(name)}</strong>${escapeHtml(message.body)}`;box.appendChild(line);box.scrollTop=box.scrollHeight;
+  }
+  async function closeChat(){document.getElementById('chatPanel').classList.add('hidden');if(chatChannel){await supabase.removeChannel(chatChannel);chatChannel=null;}await stopViewer();selectedStream=null;}
+  document.getElementById('closeChat').addEventListener('click',closeChat);
+  document.getElementById('chatForm').addEventListener('submit',async e=>{
+    e.preventDefault();const input=document.getElementById('chatInput'),body=input.value.trim();if(!body)return;if(!selectedStream)return;
+    const sender_name=guestName();
+    const {error}=await supabase.from('chat_messages').insert({stream_id:selectedStream.id,sender_id:currentUser?.id||null,sender_name,body});if(error){toast('Message not sent: '+error.message);return;}input.value='';
+  });
+  async function init(){
+    try{const {data:{session}}=await supabase.auth.getSession();currentUser=session?.user||null;updateAccountUI();await loadStreams();
+      streamChannel=supabase.channel('twmud-streams').on('postgres_changes',{event:'*',schema:'public',table:'streams'},()=>loadStreams()).subscribe();
+      // Polling keeps the prototype usable even if Realtime replication is not enabled in the dashboard yet.
+      setInterval(()=>loadStreams(),15000);setInterval(()=>{if(selectedStream&&!document.getElementById('chatPanel').classList.contains('hidden'))loadMessages();},5000);
+    }catch(e){console.error(e);connection.textContent='Connection issue';backendStatus.textContent='Could not connect to Supabase. Check your internet connection.';}
+  }
+  init();
+})();
+</script>
+</body>
+</html>
